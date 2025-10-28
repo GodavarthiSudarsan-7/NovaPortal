@@ -1,0 +1,14 @@
+package com.mvp.gsscp.controller;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
+public class HealthController {
+
+    @GetMapping("/health")
+    public String healthCheck() {
+        return "✅ Backend is alive!";
+    }
+}

@@ -1,0 +1,18 @@
+.dashboard-ai{ display:flex; gap:20px; padding:28px; min-height:calc(100vh - 60px); box-sizing:border-box; background:linear-gradient(180deg,#070816,#0f1724); color:#fff; }
+.left-panel{ width:520px; background: rgba(255,255,255,0.03); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:12px; }
+.ai-orb{ width:120px; height:120px; border-radius:999px; margin:auto; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; background: radial-gradient(circle at 30% 20%, #7b61ff, #2dd4bf); box-shadow: 0 10px 30px rgba(45,212,191,0.15); }
+.chat-box{ background: rgba(0,0,0,0.25); padding:12px; border-radius:8px; height:320px; overflow:auto; }
+.chat-line{ margin:8px 0; padding:8px 10px; border-radius:8px; max-width:85%; }
+.chat-line.you{ background: linear-gradient(90deg,#111827,#1f2937); align-self:flex-end; }
+.chat-line.nova{ background: linear-gradient(90deg,#1e293b,#0f172a); color:#dff7ff; }
+.chat-input{ display:flex; gap:8px; }
+.chat-input input{ flex:1; padding:8px 10px; border-radius:8px; border:none; background: rgba(255,255,255,0.04); color:#fff; }
+.chat-input button{ padding:8px 12px; border-radius:8px; border:none; background:linear-gradient(90deg,#7b61ff,#2dd4bf); color:#04201a; font-weight:700; cursor:pointer; }
+
+.right-panel{ flex:1; background: rgba(255,255,255,0.02); border-radius:12px; padding:16px; overflow:auto; }
+.rec-list{ display:flex; flex-direction:column; gap:12px; margin-top:12px; }
+.rec-card{ display:flex; gap:12px; align-items:center; background: rgba(255,255,255,0.02); padding:10px; border-radius:10px; }
+.rec-avatar{ width:56px; height:56px; border-radius:10px; background: linear-gradient(135deg,#7b61ff,#66d4ff); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:18px; background-size:cover; }
+.rec-info .rec-name{ font-weight:700; }
+.rec-meta{ font-size:13px; opacity:0.85; margin-top:4px; }
+.logout{ margin-top:8px; background: rgba(255,255,255,0.04); border:none; padding:8px 10px; border-radius:8px; cursor:pointer; color:#fff; }

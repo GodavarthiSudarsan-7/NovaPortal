@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: black;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Matrix Canvas */
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .login-box {
+      position: relative;
+      width: 350px;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #00ff41;
+      box-shadow: 0 0 25px #00ff41;
+      border-radius: 12px;
+      text-align: center;
+      animation: flicker 2s infinite;
+    }
+
+    .login-box h2 {
+      color: #00ff41;
+      margin-bottom: 25px;
+      font-size: 24px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px #00ff41;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    .textbox {
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .textbox input {
+      width: 100%;
+      padding: 12px;
+      background: black;
+      border: none;
+      outline: none;
+      color: #00ff41;
+      font-size: 16px;
+      border-bottom: 2px solid #00ff41;
+      text-align: center;
+      animation: text-glow 1.5s infinite alternate;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #00ff41;
+      border: none;
+      outline: none;
+      color: black;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 6px;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: black;
+      color: #00ff41;
+      border: 2px solid #00ff41;
+      box-shadow: 0 0 15px #00ff41;
+    }
+
+    /* Animations */
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #00ff41; }
+      to { text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41; }
+    }
+
+    @keyframes text-glow {
+      from { border-bottom-color: #00ff41; }
+      to { border-bottom-color: #00ff99; }
+    }
+
+    @keyframes flicker {
+      0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+      }
+      20%, 24%, 55% {
+        opacity: 0.8;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Matrix Background -->
+  <canvas id="matrix"></canvas>
+
+  <!-- Login Box -->
+  <div class="login-box">
+    <h2>LOGIN</h2>
+    <form>
+      <div class="textbox">
+        <input type="text" placeholder="Username" required>
+      </div>
+      <div class="textbox">
+        <input type="password" placeholder="Password" required>
+      </div>
+      <button type="submit" class="btn">ENTER</button>
+    </form>
+  </div>
+
+  <script>
+    // Matrix Effect
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    // Make canvas full screen
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "01";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#00ff41"; // green
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(draw, 33);
+
+    // Resize handler
+    window.addEventListener("resize", () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    });
+  </script>
+</body>
+</html>

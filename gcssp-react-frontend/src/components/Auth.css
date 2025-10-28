@@ -1,0 +1,65 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: url("https://i.ibb.co/G2WvM1r/space-bg.gif") no-repeat center center fixed;
+  background-size: cover;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.auth-box {
+  background: rgba(0, 0, 0, 0.75);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 0 25px #00f0ff, 0 0 50px #00f0ff;
+  text-align: center;
+  color: #fff;
+  width: 320px;
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+  color: #00f0ff;
+}
+
+.auth-box input {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+.glow-btn {
+  background: #00f0ff;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  padding: 12px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.glow-btn:hover {
+  background: #ff00ff;
+  box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+}
+
+span {
+  color: #00f0ff;
+  cursor: pointer;
+}
+
+.msg {
+  margin-top: 15px;
+  color: yellow;
+}

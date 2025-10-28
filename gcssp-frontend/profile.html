@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - GCSSP</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Navbar -->
+  <nav class="bg-blue-600 text-white px-6 py-3 flex justify-between items-center">
+    <h1 class="font-bold text-lg">🌍 GCSSP</h1>
+    <button onclick="logout()" class="bg-red-500 px-4 py-1 rounded-lg hover:bg-red-600">Logout</button>
+  </nav>
+
+  <!-- Profile Card -->
+  <div class="flex items-center justify-center mt-10">
+    <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-md text-center">
+      <img src="https://i.pravatar.cc/150" alt="User Avatar" class="w-24 h-24 rounded-full mx-auto mb-4">
+      <h2 id="name" class="text-2xl font-bold text-gray-800">User Name</h2>
+      <p id="email" class="text-gray-600">customer@example.com</p>
+      <p id="country" class="text-gray-500">Country</p>
+
+      <div class="mt-6">
+        <h3 class="font-semibold text-lg text-gray-700">Skills</h3>
+        <ul id="skills" class="list-disc list-inside text-gray-600"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadProfile() {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8080/api/users/me", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      if (response.ok) {
+        const customer = await response.json();
+        document.getElementById("name").innerText = customer.name;
+        document.getElementById("email").innerText = customer.email;
+        document.getElementById("country").innerText = customer.country;
+        
+        const skillsList = document.getElementById("skills");
+        skillsList.innerHTML = "";
+        if (customer.skills) {
+          customer.skills.forEach(s => {
+            skillsList.innerHTML += `<li>${s.skillName} (${s.type})</li>`;
+          });
+        }
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

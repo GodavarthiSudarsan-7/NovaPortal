@@ -1,0 +1,89 @@
+.register-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.stars, .twinkling {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: block;
+}
+
+.stars {
+  background: url("https://www.transparenttextures.com/patterns/stardust.png") repeat;
+  z-index: 0;
+}
+
+.twinkling {
+  background: url("https://www.transparenttextures.com/patterns/dark-mosaic.png") repeat;
+  animation: moveStars 300s linear infinite;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+@keyframes moveStars {
+  from { background-position: 0 0; }
+  to { background-position: -10000px 5000px; }
+}
+
+.space-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 40px #0ff;
+}
+
+.space-text {
+  font-size: 2.5rem;
+  color: white;
+  text-shadow: 0 0 20px #fff, 0 0 40px #0ff;
+  margin-bottom: 20px;
+}
+
+.space-input {
+  display: block;
+  margin: 15px auto;
+  padding: 12px;
+  width: 250px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  border: 2px solid #0ff;
+}
+
+.space-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  background: #0ff;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.space-btn:hover {
+  background: magenta;
+  color: white;
+}
+
+.space-link {
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+.space-link:hover {
+  color: magenta;
+}

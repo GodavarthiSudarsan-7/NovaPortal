@@ -1,0 +1,607 @@
+/* Background container */
+.login-page {
+  height: 100vh;
+  width: 100vw;
+  background: radial-gradient(circle at center, #1f1c2c, #2e2650, #928dab);
+  color: white;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Orb background animation — FIXED (no longer blocks clicks) */
+.orb-background {
+  position: absolute;
+  top: 50%;
+  left: 35%;
+  transform: translate(-50%, -50%);
+  perspective: 800px;
+  pointer-events: none; /* ✅ This makes sure orb doesn't block clicks */
+  z-index: 0; /* ✅ Sends it behind everything */
+}
+
+.small-orb {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff, #b8b8ff, #9180ff);
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.7),
+              0 0 150px rgba(147, 112, 219, 0.5);
+  animation: pulse 3s infinite alternate;
+}
+
+.orb-ring {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: -35px;
+  left: -35px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: spin3D 8s linear infinite;
+}
+
+.orb-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  top: -175px;
+  left: -175px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(147, 112, 219, 0.1), transparent 70%);
+  animation: pulseLight 5s infinite alternate;
+}
+
+/* Top Buttons */
+.top-bar {
+  position: absolute;
+  top: 25px;
+  right: 40px;
+  display: flex;
+  gap: 15px;
+  z-index: 10; /* ✅ Makes sure buttons are above orb */
+}
+
+.top-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+.top-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.active-btn {
+  background: white;
+  color: #1f1c2c;
+  border: none;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Form section */
+.form-section {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  width: 80%;
+  max-width: 1200px;
+  height: 100%;
+  padding-right: 80px;
+}
+/* ✅ White placeholders only inside Register form */
+.form-card.register-form input::placeholder {
+  color: #fff;
+  opacity: 0.8;
+}
+/* 🌈 Sidebar Buttons */
+.sidebar-btn {
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.sidebar-btn.active {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+}
+
+.logout-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ✨ Profile Page Inputs */
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15px;
+}
+
+.input-group input,
+.input-group textarea {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px;
+  font-size: 15px;
+  outline: none;
+  resize: none;
+  transition: 0.2s;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 8px rgba(167, 139, 250, 0.4);
+}
+
+/* Smooth scroll on long pages */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Dashboard Info Cards (used in Home Dashboard) */
+.info-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.4);
+}
+.feed-container {
+  min-height: 100vh;
+  padding: 50px 10%;
+  background: radial-gradient(circle at top left, #1b1b2f, #1e1e2e, #141414);
+  color: #fff;
+  overflow-y: auto;
+}
+
+.feed-title {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.feed-status, .feed-error {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #bbb;
+}
+
+.feed-error {
+  color: #ff5555;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.post-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 35px rgba(255, 255, 255, 0.2);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.post-profile-img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-placeholder {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+.post-user {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.post-email {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.post-body {
+  margin-top: 10px;
+}
+
+.post-content {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #ddd;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+.comment-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.comment-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.comments-section {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comment-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.add-comment-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-comment-box input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.add-comment-box button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #715aff;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.add-comment-box button:hover {
+  background: #8a75ff;
+}
+.add-post-box {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.add-post-box textarea {
+  width: 100%;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  color: #fff;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.add-post-box input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.add-post-box button {
+  background: #7b5eff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+}
+
+.add-post-box button:hover {
+  background: #9b83ff;
+}
+.feed-container {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #1e1e2f, #121212);
+  color: #fff;
+  padding: 40px 60px;
+  overflow-y: auto;
+}
+
+.feed-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #a283ff;
+}
+
+.add-post-box {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.add-post-box textarea {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  resize: none;
+  min-height: 80px;
+  margin-bottom: 10px;
+}
+
+.add-post-box input {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.post-btn {
+  background: linear-gradient(135deg, #715aff, #a283ff);
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.post-btn:hover {
+  transform: scale(1.05);
+}
+
+.post-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px rgba(113, 90, 255, 0.3);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-header h3 {
+  font-size: 1.1rem;
+  color: #a283ff;
+}
+
+.post-header .email {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.post-content {
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.comment-toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+
+.comment-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.comments-section {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.comment-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: #ff4444;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.add-comment-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-comment-box input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.add-comment-box button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #715aff;
+  color: #fff;
+  transition: 0.3s;
+}
+
+.add-comment-box button:hover {
+  background: #8a75ff;
+}
+
+.no-posts {
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
+}
+.reaction-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.reaction-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 20px;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #a78bfa;
+  transition: 0.2s;
+}
+
+.reaction-btn:hover {
+  background: rgba(167, 139, 250, 0.2);
+  transform: scale(1.05);
+}
+
+.timestamp {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 4px;
+}
