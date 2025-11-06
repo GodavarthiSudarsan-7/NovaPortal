@@ -3,27 +3,31 @@ import Welcome from "./components/Welcome";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
-import Explore from "./components/Explore"; // 👈 Added new page
+import Explore from "./components/Explore";
+import Resources from "./components/Resources"; // ✅ added new import
 import "./App.css";
 import "./components/LoginPage.css";
 
 function App() {
-  const [page, setPage] = useState("welcome"); // welcome | login | dashboard | explore
-  const [formType, setFormType] = useState("login"); // login | register
+  const [page, setPage] = useState("welcome"); // welcome | login | register | dashboard | explore | resources
+  const [formType, setFormType] = useState("login");
   const [userEmail, setUserEmail] = useState("");
   const [slide, setSlide] = useState(false);
 
+  // ✅ Handle successful login
   const handleLoginSuccess = (email) => {
     setUserEmail(email);
     setPage("dashboard");
   };
 
+  // ✅ Handle logout
   const handleLogout = () => {
+    setUserEmail("");
     setPage("welcome");
     setFormType("login");
-    setUserEmail("");
   };
 
+  // ✅ Welcome page -> Login slide animation
   const handleLoginClick = () => {
     setSlide(true);
     setTimeout(() => {
@@ -33,15 +37,44 @@ function App() {
     }, 700);
   };
 
-  // ✅ Page Routing Logic
+  // ✅ ROUTING LOGIC
   if (page === "dashboard") {
-    return <Dashboard email={userEmail} onLogout={handleLogout} onExploreClick={() => setPage("explore")} />;
+    return (
+      <Dashboard
+        email={userEmail}
+        onLogout={handleLogout}
+        onExploreClick={() => setPage("explore")}
+      />
+    );
   }
 
   if (page === "explore") {
+    // restrict access to logged-in users
+    if (!userEmail) {
+      setPage("welcome");
+      return null;
+    }
     return (
       <div className="page-wrapper">
         <Explore userEmail={userEmail} />
+        <div className="footer-nav">
+          <button className="back-btn" onClick={() => setPage("dashboard")}>
+            ← Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (page === "resources") {
+    // ✅ NEW PAGE: accessible only when logged in
+    if (!userEmail) {
+      setPage("welcome");
+      return null;
+    }
+    return (
+      <div className="page-wrapper">
+        <Resources />
         <div className="footer-nav">
           <button className="back-btn" onClick={() => setPage("dashboard")}>
             ← Back to Dashboard
@@ -84,7 +117,10 @@ function App() {
           >
             Register
           </button>
-          <button className="top-btn back-btn" onClick={() => setPage("welcome")}>
+          <button
+            className="top-btn back-btn"
+            onClick={() => setPage("welcome")}
+          >
             ← Back
           </button>
         </div>

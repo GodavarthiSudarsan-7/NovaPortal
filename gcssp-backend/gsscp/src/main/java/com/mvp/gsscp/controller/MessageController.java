@@ -22,7 +22,7 @@ public class MessageController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ 1. Get all messages between two users (case-insensitive, sorted oldest → newest)
+    // ✅ 1. Get all messages between two users (sorted oldest → newest)
     @GetMapping("/{senderEmail}/{receiverEmail}")
     public List<Message> getMessages(
             @PathVariable String senderEmail,
@@ -37,17 +37,18 @@ public class MessageController {
         return messages;
     }
 
-    // ✅ 2. Save new message (called by Node.js backend)
+    // ✅ 2. Save a new message (called from Node.js)
     @PostMapping
     @Transactional
     public Map<String, Object> saveMessage(@RequestBody Map<String, String> body) {
         Map<String, Object> resp = new HashMap<>();
         try {
+            // 🧠 FIXED: match Node.js — it sends "receiver" not "recipient"
             String senderEmail = body.get("sender");
-            String receiverEmail = body.get("recipient");
+            String receiverEmail = body.get("receiver");
             String text = body.get("message");
 
-            System.out.println("📩 Incoming message: " + body);
+            System.out.println("📩 Incoming message payload: " + body);
 
             if (senderEmail == null || receiverEmail == null || text == null || text.trim().isEmpty()) {
                 resp.put("error", "Missing required fields");
@@ -57,40 +58,38 @@ public class MessageController {
             // ✅ Ensure sender exists
             Customer sender = customerRepository.findByEmail(senderEmail.toLowerCase())
                     .orElseGet(() -> {
-                        Customer newSender = new Customer();
-                        newSender.setEmail(senderEmail.toLowerCase());
-                        newSender.setName(senderEmail.split("@")[0]);
-                        newSender.setPassword("temp");
-                        newSender.setCreatedAt(Instant.now().toString());
-                        newSender.setUpdatedAt(Instant.now().toString());
-                        return customerRepository.save(newSender);
+                        Customer c = new Customer();
+                        c.setEmail(senderEmail.toLowerCase());
+                        c.setName(senderEmail.split("@")[0]);
+                        c.setPassword("temp");
+                        c.setCreatedAt(Instant.now().toString());
+                        c.setUpdatedAt(Instant.now().toString());
+                        return customerRepository.save(c);
                     });
 
             // ✅ Ensure receiver exists
             Customer receiver = customerRepository.findByEmail(receiverEmail.toLowerCase())
                     .orElseGet(() -> {
-                        Customer newReceiver = new Customer();
-                        newReceiver.setEmail(receiverEmail.toLowerCase());
-                        newReceiver.setName(receiverEmail.split("@")[0]);
-                        newReceiver.setPassword("temp");
-                        newReceiver.setCreatedAt(Instant.now().toString());
-                        newReceiver.setUpdatedAt(Instant.now().toString());
-                        return customerRepository.save(newReceiver);
+                        Customer c = new Customer();
+                        c.setEmail(receiverEmail.toLowerCase());
+                        c.setName(receiverEmail.split("@")[0]);
+                        c.setPassword("temp");
+                        c.setCreatedAt(Instant.now().toString());
+                        c.setUpdatedAt(Instant.now().toString());
+                        return customerRepository.save(c);
                     });
 
-            System.out.println("💾 Sender: " + sender.getEmail() + " | Receiver: " + receiver.getEmail());
-
-            // ✅ Create and save message
+            // ✅ Save message
             Message msg = new Message();
             msg.setSender(sender);
             msg.setReceiver(receiver);
-            msg.setContent(text);
+            msg.setContent(text.trim());
             msg.setCreatedAt(Instant.now());
             msg.setStatus("sent");
 
             Message savedMsg = messageRepository.saveAndFlush(msg);
 
-            System.out.println("✅ Message saved to DB (ID: " + savedMsg.getId() + ")");
+            System.out.println("✅ Message saved in DB (ID: " + savedMsg.getId() + ")");
             resp.put("success", true);
             resp.put("data", savedMsg);
 
@@ -112,30 +111,24 @@ public class MessageController {
         Map<String, Object> resp = new HashMap<>();
         try {
             List<Message> msgs = messageRepository.findChatHistory(senderEmail, receiverEmail);
-
             for (Message m : msgs) {
                 if (!m.getSender().getEmail().equalsIgnoreCase(senderEmail)) {
                     m.setStatus("seen");
                 }
             }
-
             messageRepository.saveAll(msgs);
             resp.put("message", "✅ Messages marked as seen!");
-            System.out.println("👀 Seen status updated for chat between " + senderEmail + " & " + receiverEmail);
-
         } catch (Exception e) {
-            e.printStackTrace();
             resp.put("error", "Failed to mark messages as seen: " + e.getMessage());
         }
-
         return resp;
     }
 
-    // ✅ 4. Get chat contacts (used for sidebar)
+    // ✅ 4. Fetch distinct chat contacts for sidebar
     @GetMapping("/contacts/{email}")
     public List<Customer> getChatContacts(@PathVariable String email) {
         List<Customer> contacts = messageRepository.findDistinctContactsByUser(email.toLowerCase());
-        System.out.println("👥 Contacts for " + email + ": " + contacts.size());
+        System.out.println("👥 Found " + contacts.size() + " chat contacts for " + email);
         return contacts;
     }
 }

@@ -1,75 +1,169 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./DashboardAI.css";
 
 export default function DashboardAI({ userEmail, onLogout }) {
-  const [recs, setRecs] = useState([]);
   const [chat, setChat] = useState([]);
   const [input, setInput] = useState("");
+  const [insights, setInsights] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (userEmail) fetchRecommendations();
-  }, [userEmail]);
-
-  const fetchRecommendations = async () => {
-    try {
-      const res = await axios.get(`http://localhost:8080/api/recommendations?email=${encodeURIComponent(userEmail)}`);
-      setRecs(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
-    // local simulated AI reply (placeholder)
-    const userMsg = { who: "you", text: input };
-    setChat(prev => [...prev, userMsg]);
-    setInput("");
 
-    setTimeout(() => {
-      const reply = { who: "nova", text: `Nova says: I heard you mention "${userMsg.text}". Try connecting with people interested in ${userMsg.text.split(" ")[0] || "learning"}!` };
-      setChat(prev => [...prev, reply]);
-    }, 900);
+    const userMsg = { who: "you", text: input };
+    setChat((prev) => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      // ✅ Call backend API
+      const res = await axios.get(
+        `http://localhost:8080/api/ai/insights?keyword=${encodeURIComponent(
+          input
+        )}`
+      );
+
+      const reply = {
+        who: "nova",
+        text: `🧠 Nova AI found insights for "${input}" — ${res.data.relatedUsers.length} related users found.`,
+      };
+      setChat((prev) => [...prev, reply]);
+      setInsights(res.data);
+    } catch (err) {
+      console.error("⚠️ AI Insights fetch failed:", err);
+      const reply = {
+        who: "nova",
+        text: `❌ Sorry, I couldn't find any insights for "${input}". Try another topic!`,
+      };
+      setChat((prev) => [...prev, reply]);
+      setInsights(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="dashboard-ai">
+      {/* 💬 Left Panel - Chat */}
       <div className="left-panel">
-        <div className="ai-orb">Nova</div>
+        <div className="ai-orb">🤖</div>
         <h3>Nova Assistant</h3>
+
         <div className="chat-box">
-          {chat.map((c, idx) => (
-            <div key={idx} className={`chat-line ${c.who === "nova" ? "nova" : "you"}`}>
-              {c.text}
+          {chat.map((msg, i) => (
+            <div
+              key={i}
+              className={`chat-line ${msg.who === "nova" ? "nova" : "you"}`}
+            >
+              {msg.text}
             </div>
           ))}
+          {loading && (
+            <div className="chat-line nova">💭 Nova is thinking...</div>
+          )}
         </div>
+
         <form className="chat-input" onSubmit={sendMessage}>
-          <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask Nova for help (e.g. 'Find AI people')" />
-          <button type="submit">Send</button>
+          <input
+            type="text"
+            placeholder="Ask Nova anything (e.g. 'Python', 'Machine Learning', 'AI')"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button type="submit">Ask Nova 🚀</button>
         </form>
-        <button className="logout" onClick={onLogout}>Logout</button>
+
+        <button className="logout" onClick={onLogout}>
+          Logout
+        </button>
       </div>
 
+      {/* 📊 Right Panel - Insights */}
       <div className="right-panel">
-        <h3>Recommended people</h3>
-        <div className="rec-list">
-          {recs.length === 0 && <div className="empty">No recommendations yet</div>}
-          {recs.map(r => (
-            <div key={r.id} className="rec-card">
-              <div className="rec-avatar" style={{backgroundImage: r.profileImage ? `url(${r.profileImage})` : "none"}}>
-                {!r.profileImage && <span>{r.name ? r.name.charAt(0).toUpperCase() : "?"}</span>}
-              </div>
-              <div className="rec-info">
-                <div className="rec-name">{r.name || r.email}</div>
-                <div className="rec-meta">{r.interests}</div>
-                <div className="rec-langs">{r.programmingLanguages}</div>
-              </div>
+        <h3>🔍 AI Insights & Recommendations</h3>
+
+        {!insights ? (
+          <div className="empty">
+            Start by asking Nova about a topic or skill...
+          </div>
+        ) : (
+          <div className="insights-container">
+            {/* Suggested Communities */}
+            <div className="insight-section">
+              <h4>💡 Suggested Communities</h4>
+              {insights.suggestedCommunities?.length ? (
+                <ul>
+                  {insights.suggestedCommunities.map((c, i) => (
+                    <li key={i}>🌐 {c}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>— None found —</p>
+              )}
             </div>
-          ))}
-        </div>
+
+            {/* Related Technologies */}
+            <div className="insight-section">
+              <h4>⚙️ Related Technologies</h4>
+              {insights.relatedTechnologies?.length ? (
+                <ul>
+                  {insights.relatedTechnologies.map((t, i) => (
+                    <li key={i}>💻 {t}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>— No technologies found —</p>
+              )}
+            </div>
+
+            {/* Related Users */}
+            <div className="insight-section">
+              <h4>👥 People with Similar Interests</h4>
+              {insights.relatedUsers?.length > 0 ? (
+                <div className="rec-list">
+                  {insights.relatedUsers.map((u) => (
+                    <div
+                      key={u.id}
+                      className="rec-card clickable"
+                      onClick={() => {
+                        // 🧭 Go to Chat Page directly
+                        window.location.href = `/chat?user=${encodeURIComponent(
+                          u.email
+                        )}`;
+                      }}
+                    >
+                      <div
+                        className="rec-avatar"
+                        style={{
+                          backgroundImage: u.profileImage
+                            ? `url(${u.profileImage})`
+                            : "none",
+                        }}
+                      >
+                        {!u.profileImage && (
+                          <span>
+                            {u.name ? u.name.charAt(0).toUpperCase() : "?"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="rec-info">
+                        <div className="rec-name">{u.name || u.email}</div>
+                        <div className="rec-meta">{u.interests}</div>
+                        <div className="rec-langs">
+                          {u.programmingLanguages}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No matching people found.</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

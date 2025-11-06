@@ -7,6 +7,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
   const [query, setQuery] = useState("");
   const [followingSet, setFollowingSet] = useState(new Set());
   const [msg, setMsg] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null); // 👈 For popup details
 
   useEffect(() => {
     fetchUsers();
@@ -76,7 +77,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     }
   };
 
-  // ✅ Search filter
+  // ✅ Search filter — now includes college
   const filtered = users.filter((u) => {
     const q = query.toLowerCase();
     if (!q) return true;
@@ -84,6 +85,8 @@ export default function Explore({ userEmail = "", onStartChat }) {
       (u.name && u.name.toLowerCase().includes(q)) ||
       (u.email && u.email.toLowerCase().includes(q)) ||
       (u.interests && u.interests.toLowerCase().includes(q)) ||
+      (u.jobRole && u.jobRole.toLowerCase().includes(q)) ||
+      (u.college && u.college.toLowerCase().includes(q)) ||
       (u.programmingLanguages &&
         u.programmingLanguages.toLowerCase().includes(q))
     );
@@ -95,17 +98,21 @@ export default function Explore({ userEmail = "", onStartChat }) {
         <h2>🌐 Explore People</h2>
         <div className="search-wrap">
           <input
-            placeholder="Search by name, interest, or language..."
+            placeholder="Search by name, interest, job role, or college..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
       </div>
 
+      {/* 👥 User List */}
       <div className="explore-list">
         {filtered.map((u) => (
-          <div className="explore-card" key={u.id}>
-            {/* 👤 Profile Avatar */}
+          <div
+            className="explore-card"
+            key={u.id}
+            onClick={() => setSelectedUser(u)} // 👈 Show popup on click
+          >
             <div
               className="avatar"
               style={{
@@ -119,66 +126,80 @@ export default function Explore({ userEmail = "", onStartChat }) {
               )}
             </div>
 
-            {/* 💡 User Info */}
             <div className="user-info">
               <div className="name">{u.name || u.email}</div>
               <div className="meta">{u.jobRole || u.interests || ""}</div>
-              <div className="langs">{u.programmingLanguages || ""}</div>
+              <div className="langs">{u.college || u.programmingLanguages || ""}</div>
             </div>
 
-            {/* ⚙️ Action Buttons */}
             <div className="actions">
               {followingSet.has(u.id) ? (
                 <button
                   className="btn btn-unfollow"
-                  onClick={() => handleUnfollow(u.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleUnfollow(u.id);
+                  }}
                 >
                   Unfollow
                 </button>
               ) : (
                 <button
                   className="btn btn-follow"
-                  onClick={() => handleFollow(u.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFollow(u.id);
+                  }}
                 >
                   Connect
-                </button>
-              )}
-
-              {/* 💬 Chat Button */}
-              {u.email !== userEmail && (
-                <button
-                  className="btn btn-chat"
-                  onClick={() => {
-                    if (!userEmail) {
-                      setMsg("⚠️ Please login to start chat.");
-                      return;
-                    }
-                    if (onStartChat) onStartChat(u);
-                  }}
-                  style={{
-                    background: "linear-gradient(135deg,#8b5cf6,#a78bfa)",
-                    color: "#fff",
-                    marginLeft: "10px",
-                    border: "none",
-                    borderRadius: "8px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    fontWeight: 500,
-                    transition: "all 0.3s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.boxShadow =
-                      "0 0 12px rgba(139,92,246,0.7)")
-                  }
-                  onMouseLeave={(e) => (e.target.style.boxShadow = "none")}
-                >
-                  💬 Chat
                 </button>
               )}
             </div>
           </div>
         ))}
       </div>
+
+      {/* 🪄 Popup Modal for profile details */}
+      {selectedUser && (
+        <div className="popup-backdrop" onClick={() => setSelectedUser(null)}>
+          <div className="popup-card" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={
+                selectedUser.profileImage ||
+                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              }
+              alt="Profile"
+              className="popup-avatar"
+            />
+            <h2>{selectedUser.name}</h2>
+            <p><b>Job Role:</b> {selectedUser.jobRole || "Not specified"}</p>
+            <p><b>College:</b> {selectedUser.college || "—"}</p>
+            <p><b>Languages:</b> {selectedUser.programmingLanguages || "—"}</p>
+            <p><b>Interests:</b> {selectedUser.interests || "—"}</p>
+            <div className="links">
+              {selectedUser.github && (
+                <a href={selectedUser.github} target="_blank" rel="noreferrer">
+                  🔗 GitHub
+                </a>
+              )}
+              {selectedUser.linkedin && (
+                <a href={selectedUser.linkedin} target="_blank" rel="noreferrer">
+                  💼 LinkedIn
+                </a>
+              )}
+            </div>
+            <button
+              onClick={() => {
+                onStartChat(selectedUser);
+                setSelectedUser(null);
+              }}
+              className="popup-chat-btn"
+            >
+              💬 Start Chat
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="explore-footer">
         <small>{msg}</small>

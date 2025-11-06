@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import Picker from "emoji-picker-react";
+import toast, { Toaster } from "react-hot-toast";
 import "./ChatPage.css";
 
 const socket = io("http://localhost:5000", { autoConnect: true });
@@ -15,12 +16,14 @@ export default function ChatPage({ userEmail, selectedUser }) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // ✅ Register user in socket
+  // ✅ Register user on socket
   useEffect(() => {
-    if (userEmail) socket.emit("register", userEmail.toLowerCase());
+    if (userEmail) {
+      socket.emit("register", userEmail.toLowerCase());
+    }
   }, [userEmail]);
 
-  // ✅ Fetch all connections
+  // ✅ Load connections
   useEffect(() => {
     if (userEmail) {
       axios
@@ -30,56 +33,58 @@ export default function ChatPage({ userEmail, selectedUser }) {
     }
   }, [userEmail]);
 
-  // ✅ Fetch previous messages from backend
-  const fetchMessages = async (receiverEmail) => {
-    if (!receiverEmail) return;
-    try {
-      const senderLower = userEmail.toLowerCase();
-      const receiverLower = receiverEmail.toLowerCase();
+  // ✅ Fetch chat history (memoized)
+  const fetchMessages = useCallback(
+    async (receiverEmail) => {
+      if (!receiverEmail) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:8080/api/messages/${userEmail.toLowerCase()}/${receiverEmail.toLowerCase()}`
+        );
+        setMessages(res.data || []); // reset to only fetched messages
+      } catch (err) {
+        console.error("⚠️ Error fetching messages:", err);
+      }
+    },
+    [userEmail]
+  );
 
-      console.log("🔍 Fetching chat:", senderLower, receiverLower);
-      const res = await axios.get(
-        `http://localhost:8080/api/messages/${senderLower}/${receiverLower}`
-      );
-      console.log("✅ Messages fetched:", res.data);
-      setMessages(res.data || []);
-    } catch (err) {
-      console.error("⚠️ Error fetching messages:", err);
-    }
-  };
-
-  // ✅ Auto-open chat when selected user changes
+  // ✅ Handle switching between chats — clear old messages first
   useEffect(() => {
     if (selectedUser) {
       setActiveChat(selectedUser);
+      setMessages([]); // 🧹 clear old chat before loading new one
       fetchMessages(selectedUser.email);
     }
-  }, [selectedUser]);
+  }, [selectedUser, fetchMessages]);
 
-  // ✅ Re-fetch when switching between users or after refresh
+  // ✅ Refresh when switching activeChat
   useEffect(() => {
     if (activeChat && userEmail) {
+      setMessages([]); // 🧹 clear previous messages instantly
       fetchMessages(activeChat.email);
     }
-  }, [activeChat, userEmail]);
+  }, [activeChat, userEmail, fetchMessages]);
 
-  // ✅ Handle real-time receiving of messages
+  // ✅ Real-time message handling (no duplicates)
   useEffect(() => {
     const handleReceive = (msg) => {
-      if (
+      const isCurrentChat =
         msg.sender === activeChat?.email ||
-        msg.receiver === activeChat?.email
-      ) {
-        setMessages((prev) => {
-          const alreadyExists = prev.some(
-            (m) =>
-              (m.sender?.email || m.sender) === msg.sender &&
-              (m.receiver?.email || m.receiver) === msg.receiver &&
-              (m.content || m.message) === (msg.content || msg.message)
-          );
-          return alreadyExists ? prev : [...prev, msg];
-        });
-      }
+        msg.receiver === activeChat?.email;
+
+      if (!isCurrentChat) return;
+
+      setMessages((prev) => {
+        const isDuplicate = prev.some(
+          (m) =>
+            (m.sender?.email || m.sender) === msg.sender &&
+            (m.receiver?.email || m.receiver) === msg.receiver &&
+            (m.content || m.message)?.trim() ===
+              (msg.content || msg.message)?.trim()
+        );
+        return isDuplicate ? prev : [...prev, msg];
+      });
     };
 
     const handleTyping = (data) => {
@@ -89,16 +94,29 @@ export default function ChatPage({ userEmail, selectedUser }) {
       }
     };
 
-    socket.on("receiveMessage", handleReceive);
-    socket.on("typing", handleTyping);
+    socket.off("receiveMessage").on("receiveMessage", handleReceive);
+    socket.off("typing").on("typing", handleTyping);
+    socket.off("newChatNotification").on("newChatNotification", (data) => {
+      toast(`${data.from}: ${data.message}`, {
+        icon: "📩",
+        style: {
+          background: "#1e1b4b",
+          color: "#fff",
+          borderRadius: "10px",
+          padding: "10px",
+        },
+        duration: 4000,
+      });
+    });
 
     return () => {
       socket.off("receiveMessage", handleReceive);
       socket.off("typing", handleTyping);
+      socket.off("newChatNotification");
     };
   }, [activeChat]);
 
-  // ✅ Auto-scroll to latest message
+  // ✅ Auto-scroll to bottom on message update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -107,31 +125,21 @@ export default function ChatPage({ userEmail, selectedUser }) {
   const handleSend = async () => {
     if (!newMessage.trim() || !activeChat) return;
 
-    const messageData = {
+    const msgData = {
       sender: userEmail.toLowerCase(),
       receiver: activeChat.email.toLowerCase(),
       message: newMessage.trim(),
       createdAt: new Date().toISOString(),
     };
 
-    // Show immediately in UI
-    setMessages((prev) => [...prev, messageData]);
+    setMessages((prev) => [...prev, msgData]);
     setNewMessage("");
     setShowEmoji(false);
 
-    // Emit via socket
-    socket.emit("privateMessage", messageData);
-
-    // Save to backend
-    try {
-      await axios.post("http://localhost:8080/api/messages", messageData);
-      console.log("💾 Message saved to DB");
-    } catch (err) {
-      console.error("⚠️ Error saving message:", err);
-    }
+    socket.emit("privateMessage", msgData);
   };
 
-  // ✅ Handle typing event
+  // ✅ Typing indicator
   const handleTyping = (e) => {
     setNewMessage(e.target.value);
     if (activeChat)
@@ -148,7 +156,9 @@ export default function ChatPage({ userEmail, selectedUser }) {
 
   return (
     <div className="chat-container">
-      {/* 🧍 Left Sidebar */}
+      <Toaster position="top-right" />
+
+      {/* Sidebar */}
       <div className="chat-sidebar">
         <h3 className="sidebar-title">💬 Your Connections</h3>
         {connections.length === 0 ? (
@@ -162,12 +172,22 @@ export default function ChatPage({ userEmail, selectedUser }) {
               }`}
               onClick={() => {
                 setActiveChat(u);
+                setMessages([]); // clear instantly
                 fetchMessages(u.email);
               }}
             >
               <div className="avatar">
                 {u.profileImage ? (
-                  <img src={u.profileImage} alt="profile" />
+                  <img
+                    src={u.profileImage}
+                    alt="profile"
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
                 ) : (
                   <span>{u.name ? u.name.charAt(0).toUpperCase() : "?"}</span>
                 )}
@@ -181,7 +201,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
         )}
       </div>
 
-      {/* 💬 Chat Main Area */}
+      {/* Chat area */}
       <div className="chat-main">
         {!activeChat ? (
           <div className="chat-empty">
@@ -190,12 +210,20 @@ export default function ChatPage({ userEmail, selectedUser }) {
           </div>
         ) : (
           <>
-            {/* Header */}
             <div className="chat-header">
               <div className="chat-user">
                 <div className="avatar">
                   {activeChat.profileImage ? (
-                    <img src={activeChat.profileImage} alt="profile" />
+                    <img
+                      src={activeChat.profileImage}
+                      alt="profile"
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
                   ) : (
                     <span>
                       {activeChat.name
@@ -211,11 +239,10 @@ export default function ChatPage({ userEmail, selectedUser }) {
               </div>
             </div>
 
-            {/* Messages */}
             <div className="chat-body">
-              {messages.map((msg, index) => (
+              {messages.map((msg, i) => (
                 <div
-                  key={index}
+                  key={i}
                   className={`message-row ${
                     (msg.sender?.email || msg.sender) === userEmail
                       ? "sent-row"
@@ -233,6 +260,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
                   </div>
                 </div>
               ))}
+
               {isTyping && (
                 <div className="typing-indicator">
                   💭 {activeChat.name} is typing...
@@ -241,7 +269,6 @@ export default function ChatPage({ userEmail, selectedUser }) {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Section */}
             <div className="chat-input-area">
               {showEmoji && (
                 <div className="emoji-picker">
@@ -250,7 +277,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
               )}
               <button
                 className="emoji-btn"
-                onClick={() => setShowEmoji((prev) => !prev)}
+                onClick={() => setShowEmoji((p) => !p)}
               >
                 😄
               </button>

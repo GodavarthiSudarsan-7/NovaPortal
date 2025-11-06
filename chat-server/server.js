@@ -8,10 +8,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Create HTTP Server
 const server = http.createServer(app);
 
-// ✅ Setup Socket.io
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -19,59 +17,49 @@ const io = new Server(server, {
   },
 });
 
-// ✅ Maintain mapping of email → socket.id
+// 🧠 Track connected users (email → socket.id)
 let users = {};
 
-// ✅ Helper: Ensure user exists in Spring Boot
-async function ensureUserExists(email) {
+// 🧩 Fetch user info (for notifications)
+async function fetchUserDetails(email) {
   try {
-    const res = await axios.get(`http://localhost:8080/api/customers/${email}`);
-    if (!res.data) {
-      console.log(`⚠️ User not found, creating: ${email}`);
-      await axios.post(`http://localhost:8080/api/customers`, { email });
-    }
+    const res = await axios.get(`http://localhost:8080/api/users/${email}`);
+    return res.data || {};
   } catch (err) {
-    // If GET fails, try creating
-    try {
-      await axios.post(`http://localhost:8080/api/customers`, { email });
-    } catch (e) {
-      console.error("❌ Failed to ensure user exists:", e.message);
-    }
+    console.warn(`⚠️ Could not fetch profile for ${email}`);
+    return {};
   }
 }
 
-// ✅ On connection
 io.on("connection", (socket) => {
   console.log(`⚡ User connected: ${socket.id}`);
 
-  // 🔹 Register user
+  // ✅ Register user
   socket.on("register", async (email) => {
     if (email && typeof email === "string") {
-      users[email] = socket.id;
-      await ensureUserExists(email);
-      io.emit("usersOnline", Object.keys(users));
+      users[email.toLowerCase()] = socket.id;
       console.log(`✅ Registered: ${email}`);
+      io.emit("usersOnline", Object.keys(users));
     }
   });
 
-  // 🔹 Handle private messages
+  // ✅ Handle private messages
   socket.on("privateMessage", async ({ sender, receiver, message }) => {
     if (!sender || !receiver || !message) {
       console.warn("⚠️ Invalid message data:", { sender, receiver, message });
       return;
     }
 
+    sender = sender.toLowerCase();
+    receiver = receiver.toLowerCase();
+
     console.log(`📨 ${sender} → ${receiver}: ${message}`);
 
-    // ✅ Make sure both users exist in backend
-    await ensureUserExists(sender);
-    await ensureUserExists(receiver);
-
-    // ✅ Save message to backend (Spring Boot)
+    // 💾 Save message to backend (Spring Boot)
     try {
       await axios.post("http://localhost:8080/api/messages", {
         sender,
-        recipient: receiver,
+        receiver,
         message,
       });
       console.log("💾 Message saved successfully!");
@@ -79,46 +67,57 @@ io.on("connection", (socket) => {
       console.error("❌ Failed to save message:", error.message);
     }
 
-    // ✅ Send to receiver in real time if online
+    // 🧠 Get sender details
+    const senderInfo = await fetchUserDetails(sender);
+    const payload = {
+      sender,
+      receiver,
+      message,
+      senderName: senderInfo?.name || sender.split("@")[0],
+      senderImage:
+        senderInfo?.profileImage ||
+        "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+      createdAt: new Date().toISOString(),
+    };
+
+    // 💬 Deliver message to receiver only (no echo)
     const receiverSocket = users[receiver];
     if (receiverSocket) {
-      io.to(receiverSocket).emit("receiveMessage", {
-        sender,
-        receiver,
-        message,
-        createdAt: new Date().toISOString(),
+      io.to(receiverSocket).emit("receiveMessage", payload);
+
+      // 🚨 New chat notification
+      io.to(receiverSocket).emit("newChatNotification", {
+        from: payload.senderName,
+        email: sender,
+        message:
+          message.length > 50 ? message.slice(0, 50) + "..." : message,
+        image: payload.senderImage,
       });
     }
-
-    // 🚫 Don't echo to sender (frontend already shows)
   });
 
-  // 🔹 Typing notifications
+  // ✍️ Typing indicator
   socket.on("typing", ({ sender, receiver }) => {
-    const receiverSocket = users[receiver];
+    if (!sender || !receiver) return;
+    const receiverSocket = users[receiver.toLowerCase()];
     if (receiverSocket) {
       io.to(receiverSocket).emit("typing", { sender });
     }
   });
 
-  // 🔹 On disconnect
+  // ❌ Handle disconnect
   socket.on("disconnect", () => {
-    let disconnectedUser = null;
-    for (const email in users) {
-      if (users[email] === socket.id) {
-        disconnectedUser = email;
-        delete users[email];
-        break;
-      }
+    const userEmail = Object.keys(users).find((key) => users[key] === socket.id);
+    if (userEmail) {
+      delete users[userEmail];
+      console.log(`❌ ${userEmail} disconnected`);
+    } else {
+      console.log(`❌ Unknown user disconnected: ${socket.id}`);
     }
-
-    if (disconnectedUser)
-      console.log(`❌ ${disconnectedUser} disconnected (${socket.id})`);
     io.emit("usersOnline", Object.keys(users));
   });
 });
 
-// ✅ Start server
 const PORT = 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Chat server running on port ${PORT}`);

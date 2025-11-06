@@ -2,6 +2,7 @@
   "name": "gcssp-react-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://GodavarthiSudarsan-7.github.io/NovaPortal",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
@@ -9,11 +10,12 @@
     "@testing-library/user-event": "^13.5.0",
     "animate.css": "^4.1.1",
     "axios": "^1.12.2",
-    "emoji-picker-react": "^4.14.2",
+    "emoji-picker-react": "^4.15.0",
     "framer-motion": "^12.23.22",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.3",
     "react-scripts": "5.0.1",
     "react-spring": "^10.0.3",
@@ -23,6 +25,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -46,5 +50,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8080"
+  "proxy": "http://localhost:8080",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
 }

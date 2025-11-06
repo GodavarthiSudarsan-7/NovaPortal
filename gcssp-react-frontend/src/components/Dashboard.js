@@ -8,18 +8,22 @@ import {
   MessageSquare,
   Brain,
   MessageCircle,
-} from "lucide-react";
+  Globe,
+  Compass,
+} from "lucide-react"; // 🧭 Added Compass for Career Mentor
 import CommunityFeed from "./CommunityFeed";
 import Explore from "./Explore";
 import Profile from "./Profile";
 import AIDashboard from "./AIDashboard";
 import ChatPage from "./ChatPage";
+import Resources from "./Resources";
+import AICareerMentor from "./AICareerMentor"; // ✅ NEW IMPORT
 import axios from "axios";
 
 const Dashboard = ({ email, onLogout }) => {
   const [activePage, setActivePage] = useState("home");
   const [user, setUser] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null); // 👈 unified variable
+  const [selectedUser, setSelectedUser] = useState(null);
 
   // ✅ Fetch logged-in user details
   useEffect(() => {
@@ -37,7 +41,7 @@ const Dashboard = ({ email, onLogout }) => {
     setActivePage("chat");
   };
 
-  // ✅ Renders the correct main page
+  // ✅ Main Content Render
   const renderPage = () => {
     const contentStyle = {
       width: "100%",
@@ -76,10 +80,24 @@ const Dashboard = ({ email, onLogout }) => {
           </div>
         );
 
+      case "mentor":
+        return (
+          <div style={contentStyle}>
+            <AICareerMentor />
+          </div>
+        );
+
       case "chat":
         return (
           <div style={contentStyle}>
             <ChatPage userEmail={email} selectedUser={selectedUser} />
+          </div>
+        );
+
+      case "resources":
+        return (
+          <div style={contentStyle}>
+            <Resources />
           </div>
         );
 
@@ -130,8 +148,7 @@ const Dashboard = ({ email, onLogout }) => {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns:
-                    "repeat(auto-fit, minmax(200px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                   gap: "20px",
                 }}
               >
@@ -229,7 +246,9 @@ const Dashboard = ({ email, onLogout }) => {
 
             <button
               onClick={() => setActivePage("profile")}
-              className={`sidebar-btn ${activePage === "profile" ? "active" : ""}`}
+              className={`sidebar-btn ${
+                activePage === "profile" ? "active" : ""
+              }`}
             >
               <User size={22} /> <span>Profile</span>
             </button>
@@ -243,7 +262,9 @@ const Dashboard = ({ email, onLogout }) => {
 
             <button
               onClick={() => setActivePage("explore")}
-              className={`sidebar-btn ${activePage === "explore" ? "active" : ""}`}
+              className={`sidebar-btn ${
+                activePage === "explore" ? "active" : ""
+              }`}
             >
               <Users size={22} /> <span>Explore</span>
             </button>
@@ -256,10 +277,26 @@ const Dashboard = ({ email, onLogout }) => {
             </button>
 
             <button
+              onClick={() => setActivePage("mentor")}
+              className={`sidebar-btn ${activePage === "mentor" ? "active" : ""}`}
+            >
+              <Compass size={22} /> <span>Career Mentor</span>
+            </button>
+
+            <button
               onClick={() => setActivePage("chat")}
               className={`sidebar-btn ${activePage === "chat" ? "active" : ""}`}
             >
               <MessageCircle size={22} /> <span>Chat</span>
+            </button>
+
+            <button
+              onClick={() => setActivePage("resources")}
+              className={`sidebar-btn ${
+                activePage === "resources" ? "active" : ""
+              }`}
+            >
+              <Globe size={22} /> <span>Resources</span>
             </button>
           </div>
         </div>

@@ -11,7 +11,7 @@ public class Customer {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // 👈 Added for AuthController
+    private String name; // 👤 Full name of the user
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -24,13 +24,30 @@ public class Customer {
     private String interests;
     private String programmingLanguages;
 
+    // 🖼️ Profile image stored as Base64 (large size safe)
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String profileImage;
 
     private String createdAt;
     private String updatedAt;
 
-    // ✅ Getters and Setters
+    // ✅ Enhanced Profile Fields
+    private String college;    // 🎓 College name
+    private String degree;     // 📘 Degree or specialization
+    private String skills;     // 🧠 Key skills (comma-separated)
+    private String linkedin;   // 🔗 LinkedIn profile link
+    private String github;     // 💻 GitHub profile link
+
+    // 📄 Resume (Base64 or link)
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String resume;
+
+    // ==========================
+    // 🔧 Getters & Setters
+    // ==========================
+
     public Long getId() {
         return id;
     }
@@ -106,5 +123,47 @@ public class Customer {
     }
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getCollege() {
+        return college;
+    }
+    public void setCollege(String college) {
+        this.college = college;
+    }
+
+    public String getDegree() {
+        return degree;
+    }
+    public void setDegree(String degree) {
+        this.degree = degree;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public String getLinkedin() {
+        return linkedin;
+    }
+    public void setLinkedin(String linkedin) {
+        this.linkedin = linkedin;
+    }
+
+    public String getGithub() {
+        return github;
+    }
+    public void setGithub(String github) {
+        this.github = github;
+    }
+
+    public String getResume() {
+        return resume;
+    }
+    public void setResume(String resume) {
+        this.resume = resume;
     }
 }

@@ -5,6 +5,8 @@ import com.mvp.gsscp.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +18,7 @@ public class ProfileController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ Get all users (for Explore page)
+    // ✅ Get all users (for Explore, AI Dashboard, etc.)
     @GetMapping
     public List<Customer> getAllUsers() {
         return customerRepository.findAll();
@@ -25,29 +27,101 @@ public class ProfileController {
     // ✅ Get profile by email
     @GetMapping("/{email}")
     public Optional<Customer> getProfile(@PathVariable String email) {
-        return customerRepository.findByEmail(email);
+        try {
+            String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+            return customerRepository.findByEmail(decodedEmail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
-    // ✅ Update profile details (including image, bio, etc.)
+    // ✅ Update profile details (photo, resume, LinkedIn, etc.)
     @PutMapping("/{email}")
     public String updateProfile(@PathVariable String email, @RequestBody Customer updatedUser) {
-        Optional<Customer> existing = customerRepository.findByEmail(email);
+        try {
+            String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+            Optional<Customer> existing = customerRepository.findByEmail(decodedEmail);
 
-        if (existing.isPresent()) {
-            Customer user = existing.get();
+            if (existing.isPresent()) {
+                Customer user = existing.get();
 
-            user.setName(updatedUser.getName());
-            user.setPassword(updatedUser.getPassword());
-            user.setJobRole(updatedUser.getJobRole());
-            user.setProgrammingLanguages(updatedUser.getProgrammingLanguages());
-            user.setInterests(updatedUser.getInterests());
-            user.setBio(updatedUser.getBio());
-            user.setProfileImage(updatedUser.getProfileImage());
+                // 🧩 Basic Info
+                if (updatedUser.getName() != null) user.setName(updatedUser.getName());
+                if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty())
+                    user.setPassword(updatedUser.getPassword());
+                if (updatedUser.getJobRole() != null) user.setJobRole(updatedUser.getJobRole());
+                if (updatedUser.getProgrammingLanguages() != null)
+                    user.setProgrammingLanguages(updatedUser.getProgrammingLanguages());
+                if (updatedUser.getInterests() != null) user.setInterests(updatedUser.getInterests());
+                if (updatedUser.getBio() != null) user.setBio(updatedUser.getBio());
 
-            customerRepository.save(user);
-            return "✅ Profile updated successfully!";
-        } else {
-            return "⚠️ User not found!";
+                // 🎓 Additional Details
+                if (updatedUser.getCollege() != null) user.setCollege(updatedUser.getCollege());
+                if (updatedUser.getDegree() != null) user.setDegree(updatedUser.getDegree());
+                if (updatedUser.getSkills() != null) user.setSkills(updatedUser.getSkills());
+                if (updatedUser.getLinkedin() != null) user.setLinkedin(updatedUser.getLinkedin());
+                if (updatedUser.getGithub() != null) user.setGithub(updatedUser.getGithub());
+                if (updatedUser.getResume() != null) user.setResume(updatedUser.getResume());
+
+                // 🖼️ Profile Image Handling
+                if (updatedUser.getProfileImage() != null) {
+                    if (updatedUser.getProfileImage().equalsIgnoreCase("DELETE_IMAGE")) {
+                        // special case: clear image
+                        user.setProfileImage(null);
+                    } else {
+                        user.setProfileImage(updatedUser.getProfileImage());
+                    }
+                }
+
+                customerRepository.save(user);
+                return "✅ Profile updated successfully!";
+            } else {
+                return "⚠️ User not found!";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "❌ Error updating profile: " + e.getMessage();
+        }
+    }
+
+    // 🗑️ Delete full account by email
+    @DeleteMapping("/{email}")
+    public String deleteUser(@PathVariable String email) {
+        try {
+            String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+            Optional<Customer> existing = customerRepository.findByEmail(decodedEmail);
+
+            if (existing.isPresent()) {
+                customerRepository.delete(existing.get());
+                return "🗑️ User profile deleted successfully!";
+            } else {
+                return "⚠️ User not found!";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "❌ Error deleting user: " + e.getMessage();
+        }
+    }
+
+    // 🧹 Delete only profile image (optional feature)
+    @DeleteMapping("/{email}/image")
+    public String deleteProfileImage(@PathVariable String email) {
+        try {
+            String decodedEmail = URLDecoder.decode(email, StandardCharsets.UTF_8);
+            Optional<Customer> existing = customerRepository.findByEmail(decodedEmail);
+
+            if (existing.isPresent()) {
+                Customer user = existing.get();
+                user.setProfileImage(null);
+                customerRepository.save(user);
+                return "🖼️ Profile image removed successfully!";
+            } else {
+                return "⚠️ User not found!";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "❌ Error removing profile image: " + e.getMessage();
         }
     }
 }
