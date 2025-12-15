@@ -17,10 +17,10 @@ const io = new Server(server, {
   },
 });
 
-// 🧠 Track connected users (email → socket.id)
+
 let users = {};
 
-// 🧩 Fetch user info (for notifications)
+
 async function fetchUserDetails(email) {
   try {
     const res = await axios.get(`http://localhost:8080/api/users/${email}`);
@@ -34,7 +34,7 @@ async function fetchUserDetails(email) {
 io.on("connection", (socket) => {
   console.log(`⚡ User connected: ${socket.id}`);
 
-  // ✅ Register user
+
   socket.on("register", async (email) => {
     if (email && typeof email === "string") {
       users[email.toLowerCase()] = socket.id;
@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✅ Handle private messages
+
   socket.on("privateMessage", async ({ sender, receiver, message }) => {
     if (!sender || !receiver || !message) {
       console.warn("⚠️ Invalid message data:", { sender, receiver, message });
@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
 
     console.log(`📨 ${sender} → ${receiver}: ${message}`);
 
-    // 💾 Save message to backend (Spring Boot)
+  
     try {
       await axios.post("http://localhost:8080/api/messages", {
         sender,
@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
       console.error("❌ Failed to save message:", error.message);
     }
 
-    // 🧠 Get sender details
+ 
     const senderInfo = await fetchUserDetails(sender);
     const payload = {
       sender,
@@ -80,12 +80,12 @@ io.on("connection", (socket) => {
       createdAt: new Date().toISOString(),
     };
 
-    // 💬 Deliver message to receiver only (no echo)
+  
     const receiverSocket = users[receiver];
     if (receiverSocket) {
       io.to(receiverSocket).emit("receiveMessage", payload);
 
-      // 🚨 New chat notification
+   
       io.to(receiverSocket).emit("newChatNotification", {
         from: payload.senderName,
         email: sender,
@@ -96,7 +96,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ✍️ Typing indicator
+ 
   socket.on("typing", ({ sender, receiver }) => {
     if (!sender || !receiver) return;
     const receiverSocket = users[receiver.toLowerCase()];
@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  // ❌ Handle disconnect
+  
   socket.on("disconnect", () => {
     const userEmail = Object.keys(users).find((key) => users[key] === socket.id);
     if (userEmail) {
