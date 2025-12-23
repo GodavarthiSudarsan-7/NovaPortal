@@ -18,13 +18,12 @@ public class ProfileController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ Get all users (for Explore, AI Dashboard, etc.)
+   
     @GetMapping
     public List<Customer> getAllUsers() {
         return customerRepository.findAll();
     }
 
-    // ✅ Get profile by email
     @GetMapping("/{email}")
     public Optional<Customer> getProfile(@PathVariable String email) {
         try {
@@ -36,7 +35,7 @@ public class ProfileController {
         }
     }
 
-    // ✅ Update profile details (photo, resume, LinkedIn, etc.)
+
     @PutMapping("/{email}")
     public String updateProfile(@PathVariable String email, @RequestBody Customer updatedUser) {
         try {
@@ -46,7 +45,7 @@ public class ProfileController {
             if (existing.isPresent()) {
                 Customer user = existing.get();
 
-                // 🧩 Basic Info
+              
                 if (updatedUser.getName() != null) user.setName(updatedUser.getName());
                 if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty())
                     user.setPassword(updatedUser.getPassword());
@@ -56,7 +55,7 @@ public class ProfileController {
                 if (updatedUser.getInterests() != null) user.setInterests(updatedUser.getInterests());
                 if (updatedUser.getBio() != null) user.setBio(updatedUser.getBio());
 
-                // 🎓 Additional Details
+               
                 if (updatedUser.getCollege() != null) user.setCollege(updatedUser.getCollege());
                 if (updatedUser.getDegree() != null) user.setDegree(updatedUser.getDegree());
                 if (updatedUser.getSkills() != null) user.setSkills(updatedUser.getSkills());
@@ -64,10 +63,10 @@ public class ProfileController {
                 if (updatedUser.getGithub() != null) user.setGithub(updatedUser.getGithub());
                 if (updatedUser.getResume() != null) user.setResume(updatedUser.getResume());
 
-                // 🖼️ Profile Image Handling
+          
                 if (updatedUser.getProfileImage() != null) {
                     if (updatedUser.getProfileImage().equalsIgnoreCase("DELETE_IMAGE")) {
-                        // special case: clear image
+                     
                         user.setProfileImage(null);
                     } else {
                         user.setProfileImage(updatedUser.getProfileImage());
@@ -85,7 +84,6 @@ public class ProfileController {
         }
     }
 
-    // 🗑️ Delete full account by email
     @DeleteMapping("/{email}")
     public String deleteUser(@PathVariable String email) {
         try {
@@ -104,7 +102,7 @@ public class ProfileController {
         }
     }
 
-    // 🧹 Delete only profile image (optional feature)
+   
     @DeleteMapping("/{email}/image")
     public String deleteProfileImage(@PathVariable String email) {
         try {
