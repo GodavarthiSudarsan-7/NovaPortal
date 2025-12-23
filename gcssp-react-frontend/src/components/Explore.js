@@ -14,7 +14,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     if (userEmail) fetchFollowing();
   }, [userEmail]);
 
-  // ✅ Fetch all registered users
+  
   const fetchUsers = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/explore");
@@ -25,7 +25,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     }
   };
 
-  // ✅ Get following connections
+ 
   const fetchFollowing = async () => {
     try {
       const res = await axios.get(
@@ -38,7 +38,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     }
   };
 
-  // ✅ Follow a user
+ 
   const handleFollow = async (id) => {
     if (!userEmail || userEmail.trim() === "") {
       setMsg("⚠️ Please login to follow people.");
@@ -58,7 +58,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     }
   };
 
-  // ✅ Unfollow a user
+  
   const handleUnfollow = async (id) => {
     if (!userEmail) {
       setMsg("⚠️ Please login.");
@@ -77,7 +77,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
     }
   };
 
-  // ✅ Search filter — now includes college
+ 
   const filtered = users.filter((u) => {
     const q = query.toLowerCase();
     if (!q) return true;
@@ -111,7 +111,7 @@ export default function Explore({ userEmail = "", onStartChat }) {
           <div
             className="explore-card"
             key={u.id}
-            onClick={() => setSelectedUser(u)} // 👈 Show popup on click
+            onClick={() => setSelectedUser(u)}
           >
             <div
               className="avatar"
