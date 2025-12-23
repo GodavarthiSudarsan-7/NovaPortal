@@ -17,7 +17,7 @@ function Login({ onLoginSuccess }) {
     }
 
     try {
-      // ✅ Send login request to correct backend route
+      
       const response = await axios.post("http://localhost:8080/api/auth/login", {
         email,
         password,
@@ -25,10 +25,9 @@ function Login({ onLoginSuccess }) {
 
       console.log("🔐 Login API response:", response.data);
 
-      // ✅ Backend should return a JSON like:
-      // { success: true, email: "user@nova.com", name: "Boss" }
+     
       if (response.data.success) {
-        // ✅ Save login info to localStorage
+        
         localStorage.setItem("email", response.data.email);
         localStorage.setItem("name", response.data.name);
 
