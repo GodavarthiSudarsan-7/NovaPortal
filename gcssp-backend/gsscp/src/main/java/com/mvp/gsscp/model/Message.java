@@ -13,12 +13,12 @@ public class Message implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Sender (customer)
+  
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_id", nullable = false)
     private Customer sender;
 
-    // Receiver (customer) — can be null for broadcast / group messages depending on your design
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiver_id")
     private Customer receiver;
@@ -26,11 +26,11 @@ public class Message implements Serializable {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    // Timestamp
+   
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    // Optional: message status (sent, delivered, read)
+    
     @Column(name = "status")
     private String status;
 
@@ -46,7 +46,7 @@ public class Message implements Serializable {
         this.status = "sent";
     }
 
-    // ---- Getters / Setters ----
+   
 
     public Long getId() {
         return id;
