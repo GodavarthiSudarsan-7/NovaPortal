@@ -14,7 +14,7 @@ public class ChatNotificationController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    // When a new chat starts, send a notification to receiver
+
     @PostMapping("/new")
     public void sendNewChatNotification(@RequestBody Map<String, String> payload) {
         String receiverEmail = payload.get("receiverEmail");
