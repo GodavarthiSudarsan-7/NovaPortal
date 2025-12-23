@@ -16,14 +16,14 @@ export default function ChatPage({ userEmail, selectedUser }) {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // ✅ Register user on socket
+ 
   useEffect(() => {
     if (userEmail) {
       socket.emit("register", userEmail.toLowerCase());
     }
   }, [userEmail]);
 
-  // ✅ Load connections
+  
   useEffect(() => {
     if (userEmail) {
       axios
@@ -33,7 +33,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
     }
   }, [userEmail]);
 
-  // ✅ Fetch chat history (memoized)
+  
   const fetchMessages = useCallback(
     async (receiverEmail) => {
       if (!receiverEmail) return;
@@ -41,7 +41,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
         const res = await axios.get(
           `http://localhost:8080/api/messages/${userEmail.toLowerCase()}/${receiverEmail.toLowerCase()}`
         );
-        setMessages(res.data || []); // reset to only fetched messages
+        setMessages(res.data || []); 
       } catch (err) {
         console.error("⚠️ Error fetching messages:", err);
       }
@@ -49,24 +49,24 @@ export default function ChatPage({ userEmail, selectedUser }) {
     [userEmail]
   );
 
-  // ✅ Handle switching between chats — clear old messages first
+  
   useEffect(() => {
     if (selectedUser) {
       setActiveChat(selectedUser);
-      setMessages([]); // 🧹 clear old chat before loading new one
+      setMessages([]); 
       fetchMessages(selectedUser.email);
     }
   }, [selectedUser, fetchMessages]);
 
-  // ✅ Refresh when switching activeChat
+ 
   useEffect(() => {
     if (activeChat && userEmail) {
-      setMessages([]); // 🧹 clear previous messages instantly
+      setMessages([]); 
       fetchMessages(activeChat.email);
     }
   }, [activeChat, userEmail, fetchMessages]);
 
-  // ✅ Real-time message handling (no duplicates)
+  
   useEffect(() => {
     const handleReceive = (msg) => {
       const isCurrentChat =
@@ -116,12 +116,12 @@ export default function ChatPage({ userEmail, selectedUser }) {
     };
   }, [activeChat]);
 
-  // ✅ Auto-scroll to bottom on message update
+ 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ✅ Send message
+  
   const handleSend = async () => {
     if (!newMessage.trim() || !activeChat) return;
 
@@ -139,7 +139,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
     socket.emit("privateMessage", msgData);
   };
 
-  // ✅ Typing indicator
+  
   const handleTyping = (e) => {
     setNewMessage(e.target.value);
     if (activeChat)
@@ -149,7 +149,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
       });
   };
 
-  // ✅ Emoji picker
+  
   const onEmojiClick = (emojiData) => {
     setNewMessage((prev) => prev + emojiData.emoji);
   };
@@ -172,7 +172,7 @@ export default function ChatPage({ userEmail, selectedUser }) {
               }`}
               onClick={() => {
                 setActiveChat(u);
-                setMessages([]); // clear instantly
+                setMessages([]); 
                 fetchMessages(u.email);
               }}
             >
