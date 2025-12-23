@@ -20,13 +20,13 @@ public class CommentController {
     @Autowired
     private PostRepository postRepository;
 
-    // ✅ Get comments by Post ID
+   
     @GetMapping("/{postId}")
     public List<Comment> getCommentsByPost(@PathVariable Long postId) {
         return commentRepository.findByPostId(postId);
     }
 
-    // ✅ Add a new comment
+ 
     @PostMapping
     public Map<String, Object> addComment(@RequestBody Map<String, Object> payload) {
         Map<String, Object> response = new HashMap<>();
@@ -63,7 +63,7 @@ public class CommentController {
         return response;
     }
 
-    // ✅ Update (edit) a comment — only by the author
+   
     @PutMapping("/{id}")
     public Map<String, Object> updateComment(@PathVariable Long id, @RequestBody Map<String, String> body) {
         Map<String, Object> response = new HashMap<>();
@@ -100,7 +100,7 @@ public class CommentController {
         return response;
     }
 
-    // ✅ Delete a comment — only by author
+   
     @DeleteMapping("/{id}")
     public Map<String, Object> deleteComment(
             @PathVariable Long id,
