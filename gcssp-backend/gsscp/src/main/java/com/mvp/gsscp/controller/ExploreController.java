@@ -16,7 +16,7 @@ public class ExploreController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ Get all users (excluding password)
+ 
     @GetMapping
     public List<UserDTO> getAllUsers() {
         return customerRepository.findAll().stream()
@@ -24,7 +24,7 @@ public class ExploreController {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Search users by name, email, interest, job role, language, or college
+  
     @GetMapping("/search")
     public List<UserDTO> search(@RequestParam("q") String q) {
         String query = q.toLowerCase();
@@ -42,7 +42,7 @@ public class ExploreController {
                 .collect(Collectors.toList());
     }
 
-    // ✅ DTO (Data Transfer Object) to safely return user data without password
+    
     public static class UserDTO {
         public Long id;
         public String name;
