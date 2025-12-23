@@ -16,7 +16,7 @@ public class AIInsightsController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ Simple AI knowledge base
+ 
     private static final Map<String, Map<String, Object>> KNOWLEDGE_BASE = new HashMap<>();
 
     static {
@@ -51,7 +51,7 @@ public class AIInsightsController {
         KNOWLEDGE_BASE.put("web", web);
     }
 
-    // ✅ Generate AI insights + related users
+  
     @GetMapping("/insights")
     public Map<String, Object> getInsights(@RequestParam String keyword) {
         final String searchKeyword = keyword.toLowerCase(); // must be final for lambda
@@ -63,7 +63,7 @@ public class AIInsightsController {
             data.put("recommendedRoles", List.of("Learner", "Contributor"));
         }
 
-        // ✅ Find related users (based on interests or programming languages)
+       
         List<Map<String, Object>> relatedUsers = customerRepository.findAll().stream()
                 .filter(c -> {
                     String combined = ((c.getInterests() == null ? "" : c.getInterests()) + " " +
