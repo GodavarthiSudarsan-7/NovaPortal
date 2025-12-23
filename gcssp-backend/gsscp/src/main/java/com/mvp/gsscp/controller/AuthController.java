@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:3000")  // Allow React frontend access
+@CrossOrigin(origins = "http://localhost:3000")  
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -14,7 +14,7 @@ public class AuthController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // 🧩 LOGIN ENDPOINT
+  
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();
@@ -37,7 +37,7 @@ public class AuthController {
         return response;
     }
 
-    // 🧩 REGISTER ENDPOINT
+  
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();
@@ -45,7 +45,7 @@ public class AuthController {
         String password = request.get("password");
         String name = request.get("name");
 
-        // Check if email already exists
+      
         Optional<Customer> existingUser = customerRepository.findByEmail(email);
         if (existingUser.isPresent()) {
             response.put("success", false);
@@ -53,7 +53,7 @@ public class AuthController {
             return response;
         }
 
-        // Create new customer
+      
         Customer newCustomer = new Customer();
         newCustomer.setEmail(email);
         newCustomer.setPassword(password);
@@ -70,7 +70,7 @@ public class AuthController {
         return response;
     }
 
-    // 🧩 FETCH USER PROFILE
+ 
     @GetMapping("/profile/{email}")
     public Map<String, Object> getProfile(@PathVariable String email) {
         Map<String, Object> response = new HashMap<>();
@@ -88,7 +88,7 @@ public class AuthController {
         return response;
     }
 
-    // 🧩 TEST CONNECTION
+ 
     @GetMapping("/ping")
     public String ping() {
         return "✅ AuthController is active!";
