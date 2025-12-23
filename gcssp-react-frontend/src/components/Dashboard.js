@@ -10,14 +10,14 @@ import {
   MessageCircle,
   Globe,
   Compass,
-} from "lucide-react"; // 🧭 Added Compass for Career Mentor
+} from "lucide-react"; 
 import CommunityFeed from "./CommunityFeed";
 import Explore from "./Explore";
 import Profile from "./Profile";
 import AIDashboard from "./AIDashboard";
 import ChatPage from "./ChatPage";
 import Resources from "./Resources";
-import AICareerMentor from "./AICareerMentor"; // ✅ NEW IMPORT
+import AICareerMentor from "./AICareerMentor"; 
 import axios from "axios";
 
 const Dashboard = ({ email, onLogout }) => {
@@ -25,7 +25,7 @@ const Dashboard = ({ email, onLogout }) => {
   const [user, setUser] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // ✅ Fetch logged-in user details
+  
   useEffect(() => {
     if (email) {
       axios
@@ -35,13 +35,13 @@ const Dashboard = ({ email, onLogout }) => {
     }
   }, [email]);
 
-  // ✅ Handles opening chat from Explore
+  
   const handleStartChat = (otherUser) => {
     setSelectedUser(otherUser);
     setActivePage("chat");
   };
 
-  // ✅ Main Content Render
+ 
   const renderPage = () => {
     const contentStyle = {
       width: "100%",
