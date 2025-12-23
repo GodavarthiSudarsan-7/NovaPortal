@@ -31,7 +31,7 @@ public class PostSeeder {
 
         System.out.println("🌱 Seeding sample posts into the database...");
 
-        // ✅ Ensure a default user exists for sample posts
+        
         Optional<Customer> existingUser = customerRepository.findByEmail("user@novaportal.com");
 
         Customer user;
@@ -50,7 +50,7 @@ public class PostSeeder {
             user = existingUser.get();
         }
 
-        // ✅ Sample posts
+        
         Post post1 = new Post();
         post1.setCustomer(user);
         post1.setContent("Just launched NovaPortal 🚀 — an AI-powered social learning platform!");
@@ -66,7 +66,7 @@ public class PostSeeder {
         post3.setContent("Learning React.js has been fun! NovaPortal’s new dashboard looks 🔥");
         post3.setImageUrl("https://cdn.dribbble.com/users/6191/screenshots/19846617/media/3f13de62b14b50238a2e91d437f6efb4.png");
 
-        // ✅ Save to database
+        
         postRepository.saveAll(List.of(post1, post2, post3));
 
         System.out.println("✅ Post seeding complete!");
