@@ -11,7 +11,7 @@ public class Customer {
     private Long id;
 
     @Column(nullable = false)
-    private String name; // 👤 Full name of the user
+    private String name; 
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -24,7 +24,7 @@ public class Customer {
     private String interests;
     private String programmingLanguages;
 
-    // 🖼️ Profile image stored as Base64 (large size safe)
+   
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String profileImage;
@@ -32,21 +32,19 @@ public class Customer {
     private String createdAt;
     private String updatedAt;
 
-    // ✅ Enhanced Profile Fields
-    private String college;    // 🎓 College name
-    private String degree;     // 📘 Degree or specialization
-    private String skills;     // 🧠 Key skills (comma-separated)
-    private String linkedin;   // 🔗 LinkedIn profile link
-    private String github;     // 💻 GitHub profile link
 
-    // 📄 Resume (Base64 or link)
+    private String college;   
+    private String degree;     
+    private String skills;     
+    private String linkedin;  
+    private String github;     
+
+   
     @Lob
     @Column(columnDefinition = "LONGTEXT")
     private String resume;
 
-    // ==========================
-    // 🔧 Getters & Setters
-    // ==========================
+   
 
     public Long getId() {
         return id;
