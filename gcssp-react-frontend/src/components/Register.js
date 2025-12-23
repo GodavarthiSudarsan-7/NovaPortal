@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import "../components/LoginPage.css"; // for placeholder color
+import "../components/LoginPage.css"; 
 
 function Register() {
   const [name, setName] = useState("");
@@ -13,7 +13,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // ✅ Check password match first
+    
     if (password !== confirmPassword) {
       setMessage("⚠️ Passwords do not match!");
       return;
