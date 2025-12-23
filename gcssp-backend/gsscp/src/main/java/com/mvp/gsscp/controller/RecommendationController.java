@@ -16,7 +16,7 @@ public class RecommendationController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // returns simple list of recommended users based on shared interests keywords
+    
     @GetMapping
     public List<UserDTO> recommend(@RequestParam("email") String email) {
         Optional<Customer> opt = customerRepository.findByEmail(email);
@@ -25,7 +25,7 @@ public class RecommendationController {
         Customer me = opt.get();
         String mine = me.getInterests() == null ? "" : me.getInterests().toLowerCase();
 
-        // naive scoring: overlap of words in interests / programmingLanguages
+       
         List<Customer> others = customerRepository.findAll().stream()
                 .filter(c -> !Objects.equals(c.getEmail(), email))
                 .collect(Collectors.toList());
