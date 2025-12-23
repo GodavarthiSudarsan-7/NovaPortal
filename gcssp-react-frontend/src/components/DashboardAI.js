@@ -18,7 +18,7 @@ export default function DashboardAI({ userEmail, onLogout }) {
     setLoading(true);
 
     try {
-      // ✅ Call backend API
+      
       const res = await axios.get(
         `http://localhost:8080/api/ai/insights?keyword=${encodeURIComponent(
           input
