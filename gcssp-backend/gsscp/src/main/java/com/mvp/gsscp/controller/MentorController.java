@@ -10,16 +10,15 @@ public class MentorController {
 
     @GetMapping("/roadmap")
     public Map<String, Object> generateRoadmap(@RequestParam String goal) {
-        // Normalize goal input for flexibility
+       
         goal = goal == null ? "" : goal.toLowerCase()
-                .replaceAll("[^a-z0-9 ]", " ")  // remove symbols like /, -, _
-                .replaceAll("\\s+", " ")        // collapse extra spaces
+                .replaceAll("[^a-z0-9 ]", " ")  
+                .replaceAll("\\s+", " ")        
                 .trim();
 
         Map<String, Object> roadmap = new LinkedHashMap<>();
         List<Map<String, Object>> steps = new ArrayList<>();
 
-        // --- AI Engineer ---
         if (goal.contains("ai") || goal.contains("machine learning") || goal.contains("ml")) {
             roadmap.put("career", "AI Engineer");
             roadmap.put("summary", "Master Artificial Intelligence, Machine Learning, and Deep Learning to build intelligent systems.");
@@ -101,7 +100,7 @@ public class MentorController {
                     }));
         }
 
-        // --- Data Scientist ---
+        
         else if (goal.contains("data") || goal.contains("analytics") || goal.contains("data science")) {
             roadmap.put("career", "Data Scientist");
             roadmap.put("summary", "Learn to collect, clean, visualize, and analyze data to gain insights.");
@@ -142,7 +141,7 @@ public class MentorController {
                     }));
         }
 
-        // --- Cybersecurity ---
+        
         else if (goal.contains("cyber") || goal.contains("security") || goal.contains("ethical hacking")) {
             roadmap.put("career", "Cybersecurity Analyst");
             roadmap.put("summary", "Learn how to secure systems, networks, and applications.");
@@ -183,7 +182,7 @@ public class MentorController {
                     }));
         }
 
-        // --- DevOps / SRE ---
+       
         else if (goal.contains("devops") || goal.contains("sre") || goal.contains("site reliability")) {
             roadmap.put("career", "DevOps Engineer / SRE");
             roadmap.put("summary", "Learn automation, CI/CD, infrastructure as code, containerization, and monitoring.");
@@ -238,7 +237,7 @@ public class MentorController {
                     }));
         }
 
-        // --- Default General Tech Roadmap ---
+    
         else {
             roadmap.put("career", "General Tech Roadmap");
             roadmap.put("summary", "A well-rounded plan for growing in software & tech careers.");
@@ -273,7 +272,7 @@ public class MentorController {
         return roadmap;
     }
 
-    // === Helper Functions ===
+   
     private Map<String, Object> step(String title, String description, String[] resources) {
         Map<String, Object> step = new LinkedHashMap<>();
         step.put("title", title);
