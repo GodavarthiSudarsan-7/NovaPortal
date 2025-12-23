@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    // ✅ Full chat between 2 users (no duplicates)
+    
     @Query("SELECT DISTINCT m FROM Message m " +
            "JOIN FETCH m.sender s " +
            "JOIN FETCH m.receiver r " +
@@ -23,7 +23,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findChatHistory(@Param("senderEmail") String senderEmail,
                                   @Param("receiverEmail") String receiverEmail);
 
-    // ✅ Sidebar contacts
+   
     @Query("SELECT DISTINCT CASE " +
            "WHEN LOWER(m.sender.email) = LOWER(:email) THEN m.receiver " +
            "ELSE m.sender END " +
@@ -31,7 +31,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
            "WHERE LOWER(m.sender.email) = LOWER(:email) OR LOWER(m.receiver.email) = LOWER(:email)")
     List<Customer> findDistinctContactsByUser(@Param("email") String email);
 
-    // ✅ Prevent duplicate message (native query for MySQL)
+   
     @Query(value = "SELECT * FROM messages m " +
                    "JOIN customers s ON m.sender_id = s.id " +
                    "JOIN customers r ON m.receiver_id = r.id " +
