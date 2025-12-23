@@ -20,7 +20,7 @@ public class PostController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ Fetch all posts (newest first)
+  
     @GetMapping
     public List<Post> getAllPosts() {
         List<Post> posts = postRepository.findAll();
@@ -28,7 +28,7 @@ public class PostController {
         return posts;
     }
 
-    // ✅ Create a new post (must be from a registered user)
+   
     @PostMapping
     public Map<String, Object> addPost(@RequestBody Map<String, String> body) {
         Map<String, Object> response = new HashMap<>();
@@ -72,7 +72,7 @@ public class PostController {
         return response;
     }
 
-    // ✅ Update post content
+   
     @PutMapping("/{postId}")
     public Map<String, Object> updatePost(@PathVariable Long postId, @RequestBody Map<String, String> body) {
         Map<String, Object> response = new HashMap<>();
@@ -100,7 +100,7 @@ public class PostController {
         return response;
     }
 
-    // ✅ Delete a post
+   
     @DeleteMapping("/{postId}")
     public Map<String, Object> deletePost(@PathVariable Long postId) {
         Map<String, Object> response = new HashMap<>();
