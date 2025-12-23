@@ -3,7 +3,7 @@ import "./Resources.css";
 
 export default function Resources() {
   const resources = [
-    // === Programming & DSA ===
+  
     {
       title: "📘 GeeksforGeeks",
       desc: "Master DSA, algorithms, and interview prep from the ground up.",
@@ -35,7 +35,7 @@ export default function Resources() {
       tag: "Web Development",
     },
 
-    // === Web Development ===
+ 
     {
       title: "🌐 freeCodeCamp",
       desc: "Free, full-length courses on Web Dev, Data Science, and more.",
@@ -67,7 +67,7 @@ export default function Resources() {
       tag: "Guides",
     },
 
-    // === AI & Machine Learning ===
+   
     {
       title: "🤖 Google ML Crash Course",
       desc: "Google’s official machine learning fundamentals course.",
@@ -99,7 +99,7 @@ export default function Resources() {
       tag: "AI Framework",
     },
 
-    // === Cloud & DevOps ===
+   
     {
       title: "☁️ AWS Cloud Learning",
       desc: "Free AWS Cloud courses and DevOps learning paths.",
@@ -131,7 +131,7 @@ export default function Resources() {
       tag: "Cloud",
     },
 
-    // === Career & Learning ===
+   
     {
       title: "🎓 Coursera",
       desc: "University-level professional certifications and career paths.",
