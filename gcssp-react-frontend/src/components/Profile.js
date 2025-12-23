@@ -26,7 +26,7 @@ const Profile = ({ email, onLogout }) => {
     if (email) fetchProfile();
   }, [email]);
 
-  // ✅ Fetch profile
+  
   const fetchProfile = async () => {
     try {
       const res = await axios.get(`http://localhost:8080/api/users/${encodeURIComponent(email)}`);
@@ -36,13 +36,13 @@ const Profile = ({ email, onLogout }) => {
     }
   };
 
-  // ✅ Handle form input
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
   };
 
-  // ✅ Upload profile photo
+ 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -54,7 +54,7 @@ const Profile = ({ email, onLogout }) => {
     }
   };
 
-  // ✅ Delete profile image
+ 
   const handleDeleteImage = async () => {
     const confirmDelete = window.confirm("🖼️ Are you sure you want to remove your profile picture?");
     if (!confirmDelete) return;
@@ -69,7 +69,7 @@ const Profile = ({ email, onLogout }) => {
     }
   };
 
-  // ✅ Upload resume
+ 
   const handleResumeUpload = (e) => {
     const file = e.target.files[0];
     if (file && file.type === "application/pdf") {
@@ -83,7 +83,7 @@ const Profile = ({ email, onLogout }) => {
     }
   };
 
-  // ✅ Save profile changes
+
   const handleSave = async () => {
     try {
       await axios.put(`http://localhost:8080/api/users/${encodeURIComponent(email)}`, profile);
@@ -95,7 +95,7 @@ const Profile = ({ email, onLogout }) => {
     }
   };
 
-  // ✅ Delete account permanently
+
   const handleDeleteAccount = async () => {
     const confirmDelete = window.confirm(
       "⚠️ Are you sure you want to permanently delete your account?\nThis action cannot be undone!"
