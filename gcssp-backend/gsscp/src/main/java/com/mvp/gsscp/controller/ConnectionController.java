@@ -21,7 +21,7 @@ public class ConnectionController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // followerEmail and followingId passed in body
+    
     public static class ConnectRequest {
         public String followerEmail;
         public Long followingId;
