@@ -22,7 +22,7 @@ public class MessageController {
     @Autowired
     private CustomerRepository customerRepository;
 
-    // ✅ 1. Get all messages between two users (sorted oldest → newest)
+   
     @GetMapping("/{senderEmail}/{receiverEmail}")
     public List<Message> getMessages(
             @PathVariable String senderEmail,
@@ -37,13 +37,13 @@ public class MessageController {
         return messages;
     }
 
-    // ✅ 2. Save a new message (called from Node.js)
+    
     @PostMapping
     @Transactional
     public Map<String, Object> saveMessage(@RequestBody Map<String, String> body) {
         Map<String, Object> resp = new HashMap<>();
         try {
-            // 🧠 FIXED: match Node.js — it sends "receiver" not "recipient"
+           
             String senderEmail = body.get("sender");
             String receiverEmail = body.get("receiver");
             String text = body.get("message");
@@ -55,7 +55,7 @@ public class MessageController {
                 return resp;
             }
 
-            // ✅ Ensure sender exists
+           
             Customer sender = customerRepository.findByEmail(senderEmail.toLowerCase())
                     .orElseGet(() -> {
                         Customer c = new Customer();
@@ -67,7 +67,7 @@ public class MessageController {
                         return customerRepository.save(c);
                     });
 
-            // ✅ Ensure receiver exists
+           
             Customer receiver = customerRepository.findByEmail(receiverEmail.toLowerCase())
                     .orElseGet(() -> {
                         Customer c = new Customer();
@@ -79,7 +79,7 @@ public class MessageController {
                         return customerRepository.save(c);
                     });
 
-            // ✅ Save message
+           
             Message msg = new Message();
             msg.setSender(sender);
             msg.setReceiver(receiver);
@@ -102,7 +102,7 @@ public class MessageController {
         return resp;
     }
 
-    // ✅ 3. Mark messages as seen
+    
     @PutMapping("/seen/{senderEmail}/{receiverEmail}")
     public Map<String, Object> markSeen(
             @PathVariable String senderEmail,
@@ -124,7 +124,7 @@ public class MessageController {
         return resp;
     }
 
-    // ✅ 4. Fetch distinct chat contacts for sidebar
+   
     @GetMapping("/contacts/{email}")
     public List<Customer> getChatContacts(@PathVariable String email) {
         List<Customer> contacts = messageRepository.findDistinctContactsByUser(email.toLowerCase());
