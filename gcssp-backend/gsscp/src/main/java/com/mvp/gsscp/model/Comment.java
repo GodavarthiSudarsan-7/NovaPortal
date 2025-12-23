@@ -19,7 +19,7 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    // Getters & Setters
+   
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
