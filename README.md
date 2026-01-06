@@ -62,7 +62,7 @@ Postman
 
 ⚙️ Installation & Setup
 
-git clone https://github.com/your-username/NovaPortal.git
+git clone https://github.com/GodavarthiSudarsan-7/NovaPortal.git
 cd NovaPortal
 
 cd frontend
